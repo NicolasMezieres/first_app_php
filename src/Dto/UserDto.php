@@ -5,6 +5,7 @@ namespace App\Dto;
 use App\Entity\UserEntity;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 #[Map(target: UserEntity::class)]
 class UserDto
@@ -32,11 +33,19 @@ class UserDto
     #[Map(target: "age")]
     public int $age = 0;
 
+    #[Assert\Type(type: "string")]
     #[Assert\Length(max: 50, maxMessage: "FirstName must be less than {{ limit } characters long.")]
     #[Map(target: "firstName")]
     public string $firstName = "";
 
+    #[Assert\Type(type: "string")]
     #[Assert\Length(max: 50, maxMessage: "FirstName must be less than {{ limit }} characters long.")]
     #[Map(target: "lastName")]
     public string $lastName = "";
+
+    #[Assert\NotBlank(message: "Password is required")]
+    #[Assert\Type(type: "string")]
+    #[Assert\Length(min: 16, max: 255,)]
+    #[Assert\PasswordStrength(minScore: PasswordStrength::STRENGTH_STRONG, message: "Your password is too predictable")]
+    public string $password = "";
 }

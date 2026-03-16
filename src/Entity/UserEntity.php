@@ -23,6 +23,9 @@ class UserEntity
     #[ORM\Column(length: 16, unique: true, type: "string")]
     private ?string $username = null;
 
+    #[ORM\Column(length: 255, type: "string")]
+    private ?string $password = null;
+
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $age = null;
 
@@ -103,5 +106,13 @@ class UserEntity
         $this->lastName = $lastName;
 
         return $this;
+    }
+    public function setPassword(?string $password)
+    {
+        $this->password = $password;
+    }
+    public function getPassword()
+    {
+        return $this->password;
     }
 }

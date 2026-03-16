@@ -8,16 +8,18 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 class AuthService
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
+    private PasswordHasherInterface  $hasher;
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, PasswordHasherInterface  $passwordHasher)
     {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+        $this->hasher = $passwordHasher;
     }
 
 
@@ -31,11 +33,13 @@ class AuthService
         if ($existingUsername) {
             throw new HttpException(401, "Username already used");
         }
+        $hashedPassword = $this->hasher->hash($userDto->password);
         $user = new UserEntity();
         $user->setEmail($userDto->email);
         $user->setName($userDto->name);
         $user->setUsername($userDto->username);
         $user->setAge($userDto->age);
+        $user->setPassword($hashedPassword);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         return new JsonResponse(["message" => "Inscription validé",], 201);
