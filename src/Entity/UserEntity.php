@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
-class UserEntity
+class UserEntity implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -111,7 +112,7 @@ class UserEntity
     {
         $this->password = $password;
     }
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }

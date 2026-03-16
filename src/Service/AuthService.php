@@ -8,14 +8,14 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthService
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
-    private PasswordHasherInterface  $hasher;
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, PasswordHasherInterface  $passwordHasher)
+    private UserPasswordHasherInterface  $hasher;
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, UserPasswordHasherInterface  $passwordHasher)
     {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
@@ -33,8 +33,8 @@ class AuthService
         if ($existingUsername) {
             throw new HttpException(401, "Username already used");
         }
-        $hashedPassword = $this->hasher->hash($userDto->password);
         $user = new UserEntity();
+        $hashedPassword = $this->hasher->hashPassword($user, $userDto->password);
         $user->setEmail($userDto->email);
         $user->setName($userDto->name);
         $user->setUsername($userDto->username);
